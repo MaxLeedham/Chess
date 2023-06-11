@@ -52,7 +52,11 @@ class Piece:
             prev_square = board.get_square_from_pos(self.pos)
             square_copy = copy.copy(square)
 
-            print(self.generate_move_notation(board, prev_square, square))
+            board.move_count += 1
+            board.last_move = (
+                self.generate_move_notation(board, prev_square, square) or "some move"
+            )
+            print(board.last_move if board.last_move != "some move" else "")
 
             self.pos, self.x, self.y = square.pos, square.x, square.y
 
@@ -147,5 +151,13 @@ class Piece:
                 )
             else:
                 move_notation += new_square.get_coord(board)
+
+        if board.is_in_check(
+            "black" if board.turn == "white" else "white",
+            [prev_square.pos, new_square.pos],
+            True,
+        ):
+            print("Would be in check")
+            move_notation = "+"
 
         return move_notation

@@ -5,11 +5,11 @@ import typing
 import pygame
 
 if typing.TYPE_CHECKING:
-    from sharedfiles import board
+    from sharedfiles import board, piece
 
 
 class Square:
-    def __init__(self, x, y, width, height, board: board.Board):
+    def __init__(self, x: int, y: int, width: int, height: int, board: board.Board):
         # Make attributes for the arguments passed into init
         self.x = x
         self.y = y
@@ -30,7 +30,7 @@ class Square:
         self.highlight_color = (100, 249, 83) if self.color == "light" else (0, 228, 10)
 
         # Holds the occupying piece, if there is any, otherwise None
-        self.occupying_piece = None
+        self.occupying_piece: piece.Piece = None
         self.coord = self.get_coord(board)
         self.highlight = False
         self.rect = pygame.Rect(self.abs_x, self.abs_y, self.width, self.height)

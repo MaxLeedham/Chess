@@ -34,6 +34,8 @@ class Board:
 
         # Which colours turn it is
         self.turn = "white"
+        self.last_move = None
+        self.move_count = 0
 
         # What the board currently looks like
         # By default configured how a chess game starts
@@ -85,7 +87,7 @@ class Board:
         self.squares = self.generate_squares()
         self.setup_board()
 
-    def generate_squares(self):
+    def generate_squares(self) -> typing.List[Square]:
         """Generates and returns the list of squares making up the board"""
         output = []
         for y in range(self.size):
@@ -161,8 +163,72 @@ class Board:
             ):
                 self.selected_piece = clicked_square.occupying_piece
 
+    # def is_in_check(
+    #     self,
+    #     colour: str,
+    #     board_change: typing.List[
+    #         typing.Tuple[int, int], typing.Tuple[int, int]
+    #     ] = None,
+    #     tmp: bool = False,
+    # ):  # board_change = [(x1, y1), (x2, y2)]
+    #     """Checks is a certain colour is in check or not"""
+
+    #     # Makes some variables that will be used while checking
+    #     output = False
+    #     king_pos = None
+    #     changing_piece = None
+    #     old_square = None
+    #     new_square = None
+    #     new_square_old_piece = None
+
+    #     if board_change is not None:
+    #         print("board_change is not None") if tmp else ""
+    #         for square in self.squares:
+    #             if square.pos == board_change[0]:
+    #                 changing_piece = square.occupying_piece
+    #                 old_square = square
+    #                 old_square.occupying_piece = None
+
+    #             if square.pos == board_change[1]:
+    #                 new_square = square
+    #                 new_square_old_piece = new_square.occupying_piece
+    #                 new_square.occupying_piece = changing_piece
+
+    #     pieces = [
+    #         i.occupying_piece for i in self.squares if i.occupying_piece is not None
+    #     ]
+
+    #     if changing_piece is not None and changing_piece.notation == "K":
+    #         king_pos = new_square.pos
+
+    #     if king_pos is None:
+    #         for piece in pieces:
+    #             if piece.notation == "K" and piece.colour == colour:
+    #                 king_pos = piece.pos
+
+    #     for piece in pieces:
+    #         if piece.colour != colour:
+    #             # If a piece can attack the square the king is on
+    #             print(
+    #                 f"{piece.notation}: {[square.pos for square in piece.attacking_squares(self)]}"  # noqa: E501
+    #             ) if tmp else ""
+    #             for square in piece.attacking_squares(self):
+    #                 if square.pos == king_pos:
+    #                     output = True
+
+    #     if board_change is not None:
+    #         old_square.occupying_piece = changing_piece
+    #         new_square.occupying_piece = new_square_old_piece
+
+    #     return output
+
     def is_in_check(
-        self, colour, board_change=None
+        self,
+        colour: str,
+        board_change: typing.List[
+            typing.Tuple[int, int], typing.Tuple[int, int]
+        ] = None,
+        tmp: bool = False,
     ):  # board_change = [(x1, y1), (x2, y2)]
         """Checks is a certain colour is in check or not"""
 
@@ -175,34 +241,50 @@ class Board:
         new_square_old_piece = None
 
         if board_change is not None:
+            print("board_change is not None") if tmp else ""
             for square in self.squares:
                 if square.pos == board_change[0]:
                     changing_piece = square.occupying_piece
                     old_square = square
                     old_square.occupying_piece = None
-            for square in self.squares:
+
                 if square.pos == board_change[1]:
                     new_square = square
                     new_square_old_piece = new_square.occupying_piece
                     new_square.occupying_piece = changing_piece
+
+            check = self.is_in_check(colour, None, tmp)
+            old_square.occupying_piece = changing_piece
+            new_square.occupying_piece = new_square_old_piece
+
+            return check
+
         pieces = [
             i.occupying_piece for i in self.squares if i.occupying_piece is not None
         ]
+
         if changing_piece is not None and changing_piece.notation == "K":
             king_pos = new_square.pos
+
         if king_pos is None:
             for piece in pieces:
                 if piece.notation == "K" and piece.colour == colour:
                     king_pos = piece.pos
+
         for piece in pieces:
             if piece.colour != colour:
                 # If a piece can attack the square the king is on
+                print(
+                    f"{piece.notation}: {[square.pos for square in piece.attacking_squares(self)]}"  # noqa: E501
+                ) if tmp else ""
                 for square in piece.attacking_squares(self):
                     if square.pos == king_pos:
                         output = True
+
         if board_change is not None:
             old_square.occupying_piece = changing_piece
             new_square.occupying_piece = new_square_old_piece
+
         return output
 
     def is_in_checkmate(self, colour):

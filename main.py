@@ -22,11 +22,19 @@ def draw(display: pygame.surface.Surface):
     board.draw(display)
 
     add_text(f"{board.turn.title()}'s turn", (718, 50), display)
+    add_text(
+        f"Move {board.move_count}:",
+        (718, 100),
+        display,
+    )
+    add_text(
+        "None" if board.last_move is None else board.last_move, (718, 150), display
+    )
 
     pygame.display.update()
 
 
-def add_text(text: str, cords: typing.Tuple[str, str], display) -> None:
+def add_text(text: str, cords: typing.Tuple[int, int], display) -> None:
     display_text = font.render(text, True, (255, 255, 255))
     text_rect = display_text.get_rect()
     text_rect.center = cords
