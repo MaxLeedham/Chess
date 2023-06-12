@@ -23,13 +23,11 @@ def draw(display: pygame.surface.Surface):
 
     add_text(f"{board.turn.title()}'s turn", (718, 50), display)
     add_text(
-        f"Move {board.move_count}:",
+        f"Move {len(board.moves)}:",
         (718, 100),
         display,
     )
-    add_text(
-        "None" if board.last_move is None else board.last_move, (718, 150), display
-    )
+    add_text("None" if len(board.moves) == 0 else board.moves[-1], (718, 150), display)
 
     pygame.display.update()
 
@@ -59,17 +57,21 @@ if __name__ == "__main__":
             if board.is_in_checkmate("black"):  # If black is in checkmate
                 print("White wins!")
                 running = False
+                break
 
             elif board.is_in_checkmate("white"):  # If white is in checkmate
                 print("Black wins!")
                 running = False
+                break
 
             if board.is_in_stalemate("black") or board.is_in_stalemate("white"):
                 print("Draw by stalemate")
                 # print("black" if board.is_in_stalemate("black") else "white")
                 running = False
+                break
 
             # Draw the board
             draw(screen)
+        print(f"moves: {board.moves}")
     else:
         pass

@@ -36,7 +36,7 @@ class Square:
         self.rect = pygame.Rect(self.abs_x, self.abs_y, self.width, self.height)
 
     def __repr__(self):
-        return f"Square at x: {self.x}, y: {self.y}"
+        return f"Square at x: {self.x} and y: {self.y}{f' with piece {self.occupying_piece.notation}' if self.occupying_piece is not None else ''}"  # noqa: E501
 
     def get_coord(self, board: board.Board):
         """Get the formal notation of the tile"""

@@ -16,6 +16,9 @@ class Piece:
         self.colour: str = colour
         self.has_moved: bool = False
 
+    def __str__(self) -> str:
+        return f"{self.notation} at position {self.pos}"
+
     def get_moves(self, board: Board) -> typing.List[Square]:
         output = []
         for direction in self.get_possible_moves(board):
@@ -39,7 +42,13 @@ class Piece:
                 output.append(square)
         return output
 
-    def move(self, board: Board, square: Square, force: bool = False) -> bool:
+    def move(
+        self,
+        board: Board,
+        square: Square,
+        force: bool = False,
+        skip_generation: bool = False,
+    ) -> bool:
         """Moves a piece on the board. If force=True it will move even if it wouldn't
         normally be possible, for example when castling the king and rook need to go
         past each other
@@ -53,10 +62,10 @@ class Piece:
             square_copy = copy.copy(square)
 
             board.move_count += 1
-            board.last_move = (
-                self.generate_move_notation(board, prev_square, square) or "some move"
-            )
-            print(board.last_move if board.last_move != "some move" else "")
+            board.moves.append(
+                (self.generate_move_notation(board, prev_square, square) or "some move")
+            ) if not skip_generation else ""
+            print(board.moves[-1] if board.moves[-1] != "some move" else "")
 
             self.pos, self.x, self.y = square.pos, square.x, square.y
 
@@ -108,6 +117,7 @@ class Piece:
                         board,
                         board.get_square_from_pos((self.x + 1, self.y)),
                         force=True,
+                        skip_generation=True,
                     )
 
                 elif prev_square.x - self.x == -2:
@@ -116,6 +126,7 @@ class Piece:
                         board,
                         board.get_square_from_pos((self.x - 1, self.y)),
                         force=True,
+                        skip_generation=True,
                     )
 
             return True
@@ -151,13 +162,18 @@ class Piece:
                 )
             else:
                 move_notation += new_square.get_coord(board)
-
-        if board.is_in_check(
-            "black" if board.turn == "white" else "white",
-            [prev_square.pos, new_square.pos],
-            True,
+        elif (
+            prev_square.occupying_piece.notation == "K"
+            and abs(prev_square.x - new_square.x) == 2
         ):
-            print("Would be in check")
-            move_notation = "+"
+            # It was a castle
+            if prev_square.x - new_square.x == 2:
+                move_notation += "O-O-O"
+            else:
+                move_notation += "O-O"
+        else:
+            move_notation += (
+                f"{prev_square.occupying_piece.notation}{new_square.get_coord(board)}"
+            )
 
         return move_notation

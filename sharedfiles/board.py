@@ -34,7 +34,7 @@ class Board:
 
         # Which colours turn it is
         self.turn = "white"
-        self.last_move = None
+        self.moves = []
         self.move_count = 0
 
         # What the board currently looks like
@@ -163,65 +163,6 @@ class Board:
             ):
                 self.selected_piece = clicked_square.occupying_piece
 
-    # def is_in_check(
-    #     self,
-    #     colour: str,
-    #     board_change: typing.List[
-    #         typing.Tuple[int, int], typing.Tuple[int, int]
-    #     ] = None,
-    #     tmp: bool = False,
-    # ):  # board_change = [(x1, y1), (x2, y2)]
-    #     """Checks is a certain colour is in check or not"""
-
-    #     # Makes some variables that will be used while checking
-    #     output = False
-    #     king_pos = None
-    #     changing_piece = None
-    #     old_square = None
-    #     new_square = None
-    #     new_square_old_piece = None
-
-    #     if board_change is not None:
-    #         print("board_change is not None") if tmp else ""
-    #         for square in self.squares:
-    #             if square.pos == board_change[0]:
-    #                 changing_piece = square.occupying_piece
-    #                 old_square = square
-    #                 old_square.occupying_piece = None
-
-    #             if square.pos == board_change[1]:
-    #                 new_square = square
-    #                 new_square_old_piece = new_square.occupying_piece
-    #                 new_square.occupying_piece = changing_piece
-
-    #     pieces = [
-    #         i.occupying_piece for i in self.squares if i.occupying_piece is not None
-    #     ]
-
-    #     if changing_piece is not None and changing_piece.notation == "K":
-    #         king_pos = new_square.pos
-
-    #     if king_pos is None:
-    #         for piece in pieces:
-    #             if piece.notation == "K" and piece.colour == colour:
-    #                 king_pos = piece.pos
-
-    #     for piece in pieces:
-    #         if piece.colour != colour:
-    #             # If a piece can attack the square the king is on
-    #             print(
-    #                 f"{piece.notation}: {[square.pos for square in piece.attacking_squares(self)]}"  # noqa: E501
-    #             ) if tmp else ""
-    #             for square in piece.attacking_squares(self):
-    #                 if square.pos == king_pos:
-    #                     output = True
-
-    #     if board_change is not None:
-    #         old_square.occupying_piece = changing_piece
-    #         new_square.occupying_piece = new_square_old_piece
-
-    #     return output
-
     def is_in_check(
         self,
         colour: str,
@@ -253,12 +194,6 @@ class Board:
                     new_square_old_piece = new_square.occupying_piece
                     new_square.occupying_piece = changing_piece
 
-            check = self.is_in_check(colour, None, tmp)
-            old_square.occupying_piece = changing_piece
-            new_square.occupying_piece = new_square_old_piece
-
-            return check
-
         pieces = [
             i.occupying_piece for i in self.squares if i.occupying_piece is not None
         ]
@@ -286,6 +221,71 @@ class Board:
             new_square.occupying_piece = new_square_old_piece
 
         return output
+
+    # def is_in_check(
+    #     self,
+    #     colour: str,
+    #     board_change: typing.List[
+    #         typing.Tuple[int, int], typing.Tuple[int, int]
+    #     ] = None,
+    #     tmp: bool = False,
+    # ):  # board_change = [(x1, y1), (x2, y2)]
+    #     """Checks is a certain colour is in check or not"""
+
+    #     # Makes some variables that will be used while checking
+    #     output = False
+    #     king_pos = None
+    #     changing_piece = None
+    #     old_square = None
+    #     new_square = None
+    #     new_square_old_piece = None
+
+    #     if board_change is not None:
+    #         print("board_change is not None") if tmp else ""
+    #         for square in self.squares:
+    #             if square.pos == board_change[0]:
+    #                 changing_piece = square.occupying_piece
+    #                 old_square = square
+    #                 old_square.occupying_piece = None
+
+    #             if square.pos == board_change[1]:
+    #                 new_square = square
+    #                 new_square_old_piece = new_square.occupying_piece
+    #                 new_square.occupying_piece = changing_piece
+
+    #         check = self.is_in_check(colour, None, tmp)
+    #         old_square.occupying_piece = changing_piece
+    #         new_square.occupying_piece = new_square_old_piece
+
+    #         return check
+
+    #     pieces = [
+    #         i.occupying_piece for i in self.squares if i.occupying_piece is not None
+    #     ]
+
+    #     if changing_piece is not None and changing_piece.notation == "K":
+    #         king_pos = new_square.pos
+
+    #     if king_pos is None:
+    #         for piece in pieces:
+    #             if piece.notation == "K" and piece.colour == colour:
+    #                 king_pos = piece.pos
+
+    #     for piece in pieces:
+    #         if piece.colour != colour:
+    #             # If a piece can attack the square the king is on
+    #             print(
+    #                 f"{piece.notation}: {[square.pos for square in piece.attacking_squares(self)]}"  # noqa: E501
+    #             ) if tmp else ""
+    #             for square in piece.attacking_squares(self):
+    #                 if square.pos == king_pos:
+    #                     output = True
+
+    #     if board_change is not None:
+    #         old_square.occupying_piece = changing_piece
+    #         new_square.occupying_piece = new_square_old_piece
+
+    #     return output
 
     def is_in_checkmate(self, colour):
         """Checks if a colours king is in checkmate"""
@@ -360,3 +360,40 @@ class Board:
                 pawns.append(piece)
 
         return pawns
+
+    def get_piece(
+        self,
+        notation: typing.Optional[str] = None,
+        pos: typing.Optional[typing.Tuple[int, int]] = None,
+        colour: typing.Optional[str] = None,
+    ) -> typing.List[Piece]:
+        """Gets any piece on the board that matches the criteria
+
+        Any of the arguments that are not set will be skipped when finding the pieces
+
+        It searches from the top left square going right across the row
+        and then at the end of the row, starts searching the next row down"""
+
+        if [notation, pos, colour] == [None, None, None]:
+            raise ValueError("No criteria for searching for pieces found")
+
+        pieces = [
+            square.occupying_piece
+            for square in self.squares
+            if square.occupying_piece is not None
+        ]
+
+        criteria_met_pieces = []
+
+        for piece in pieces:
+            # Skip pieces that don't meet the criteria
+            if (
+                (notation is not None and piece.notation != notation)
+                or (pos is not None and piece.pos != pos)
+                or (colour is not None and piece.colour != colour)
+            ):
+                continue
+
+            criteria_met_pieces.append(piece)
+
+        return criteria_met_pieces
