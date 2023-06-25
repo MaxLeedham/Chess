@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import time
 import typing
 
 from sharedfiles.pieces.bishop import Bishop
@@ -34,6 +35,7 @@ class Board:
 
         # Which colours turn it is
         self.turn = "white"
+        self.time_at_turn = time.time()
         self.moves = []
         self.move_count = 0
 
@@ -151,6 +153,7 @@ class Board:
             # change who's turn it is
             elif self.selected_piece.move(self, clicked_square):
                 self.turn = "white" if self.turn == "black" else "black"
+                self.time_at_turn = time.time()
 
                 for pawn in self.get_pawns(self.turn):
                     pawn.en_passant_possible = False
