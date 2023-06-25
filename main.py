@@ -14,15 +14,13 @@ WINDOW_SIZE = (825, 600)
 screen = pygame.display.set_mode(WINDOW_SIZE)
 pygame.display.set_caption("Chess")
 
-board = Board(WINDOW_SIZE[1], WINDOW_SIZE[1], board_size)
+board = Board(WINDOW_SIZE[1], WINDOW_SIZE[1], board_size, time_limit)
 
 state = "playing"
 font = pygame.font.Font("freesansbold.ttf", 30)
 
 start_time = time.time()
 elapsed_time = time.time() - start_time
-white_time = time_limit
-black_time = time_limit
 
 
 def format_time(seconds: float):
@@ -46,10 +44,10 @@ def draw(display: pygame.surface.Surface):
     add_text("None" if len(board.moves) == 0 else board.moves[-1], (718, 150), display)
 
     add_text("Blacks Time:", (712.5, 350), display)
-    add_text(format_time(black_time), (712.5, 395), display)
+    add_text(format_time(board.black_time), (712.5, 395), display)
 
     add_text("Whites Time:", (712.5, 450), display)
-    add_text(format_time(white_time), (712.5, 495), display)
+    add_text(format_time(board.white_time), (712.5, 495), display)
 
     pygame.display.update()
 
@@ -72,11 +70,15 @@ if __name__ == "__main__":
             time_left = time_limit - elapsed_time
 
             if board.turn == "white":
-                white_elapsed_time = time.time() - board.time_at_turn
-                white_time = time_limit - white_elapsed_time
+                board.white_elapsed_time = time.time() - board.time_at_turn
+                board.white_time = time_limit - (
+                    board.white_time_elapsed + board.white_elapsed_time
+                )
             else:
-                black_elapsed_time = time.time() - board.time_at_turn
-                black_time = time_limit - black_elapsed_time
+                board.black_elapsed_time = time.time() - board.time_at_turn
+                board.black_time = time_limit - (
+                    board.black_time_elapsed + board.black_elapsed_time
+                )
 
             mouse_x, mouse_y = pygame.mouse.get_pos()
             for event in pygame.event.get():
@@ -104,13 +106,13 @@ if __name__ == "__main__":
                 running = False
                 break
 
-            if white_time <= 0:
-                print(f"Black wins on time with {format_time(black_time)} left")
+            if board.white_time <= 0:
+                print(f"Black wins on time with {format_time(board.black_time)} left")
                 running = False
                 break
 
-            elif black_time <= 0:
-                print(f"White wins on time with {format_time(white_time)} left")
+            elif board.black_time <= 0:
+                print(f"White wins on time with {format_time(board.white_time)} left")
                 running = False
                 break
 

@@ -18,7 +18,7 @@ if typing.TYPE_CHECKING:
 
 # Game state checker
 class Board:
-    def __init__(self, width, height, size=8):
+    def __init__(self, width, height, size=8, time_limit=600):
         # Sets up the width and height of the board as well as the individual squares
         self.width = width
         self.height = height
@@ -35,7 +35,15 @@ class Board:
 
         # Which colours turn it is
         self.turn = "white"
+
         self.time_at_turn = time.time()
+        self.white_time = time_limit
+        self.black_time = time_limit
+        self.white_elapsed_time = 0
+        self.black_elapsed_time = 0
+        self.white_time_elapsed = 0  # Cumulative elapsed time for white player
+        self.black_time_elapsed = 0  # Cumulative elapsed time for black player
+
         self.moves = []
         self.move_count = 0
 
@@ -153,6 +161,12 @@ class Board:
             # change who's turn it is
             elif self.selected_piece.move(self, clicked_square):
                 self.turn = "white" if self.turn == "black" else "black"
+
+                if self.turn == "white":
+                    self.white_time_elapsed += self.white_elapsed_time
+                else:
+                    self.black_time_elapsed += self.black_elapsed_time
+
                 self.time_at_turn = time.time()
 
                 for pawn in self.get_pawns(self.turn):
