@@ -79,7 +79,7 @@ class InputBox:
                 self.text += event.unicode
                 self.update()
 
-            # Re-render the text.
+            # Re-render the text
             self.txt_surface = self.font.render(
                 self.text if not self.hide_text else "*" * len(self.text),
                 True,
@@ -87,12 +87,12 @@ class InputBox:
             )
 
     def update(self):
-        # Resize the box if the text is too long.
+        # Resize the box if the text is too long
         width = max(200, self.txt_surface.get_width() + 25)
         self.rect.w = width
 
     def draw(self, screen):
-        # Blit the text.
+        # Blit the text
         screen.blit(self.txt_surface, (self.rect.x + 5, self.rect.y + 5))
-        # Draw the rect.
+        # Draw the rect
         pygame.draw.rect(screen, self.colour, self.rect, 2)

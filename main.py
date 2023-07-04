@@ -58,7 +58,7 @@ def draw(display: pygame.surface.Surface):
 
 def validate_login(username: str, password: str) -> bool:
     data = db.select(
-        "SELECT userID, username FROM users WHERE username = ? and password = ?",
+        "SELECT userID, username, rating FROM users WHERE username = ? and password = ?",  # noqa: E501
         (username, password),
     )
 
@@ -69,7 +69,7 @@ def validate_login(username: str, password: str) -> bool:
                 return False
 
     if len(data) == 1:
-        players.append(User(data[0][0], data[0][1]))
+        players.append(User(data[0][0], data[0][1], rating=data[0][2]))
 
     print(players)
 
@@ -727,6 +727,40 @@ if __name__ == "__main__":
                         "UPDATE users SET games_played = games_played + 1 WHERE userID = ?",  # noqa: E501
                         (white_user.user_id,),
                     )
+
+                if not white_user.guest and not black_user.guest:
+                    # Update their ratings
+
+                    if white_user.rating == black_user.rating:
+                        difference = 50
+                        print("Ratings are the same")
+                    else:
+                        difference = abs(white_user.rating - black_user.rating) * 0.2
+
+                    if results[0] == "white":
+                        db.execute(
+                            "UPDATE users SET rating = rating + ? WHERE userID = ?",
+                            (difference, white_user.user_id),
+                        )
+                        white_user.rating += difference
+
+                        db.execute(
+                            "UPDATE users SET rating = rating - ? WHERE userID = ?",
+                            (difference, black_user.user_id),
+                        )
+                        black_user.rating -= difference
+                    else:
+                        db.execute(
+                            "UPDATE users SET rating = rating + ? WHERE userID = ?",
+                            (difference, black_user.user_id),
+                        )
+                        black_user.rating += difference
+
+                        db.execute(
+                            "UPDATE users SET rating = rating - ? WHERE userID = ?",
+                            (difference, white_user.user_id),
+                        )
+                        white_user.rating -= difference
 
             db.execute(
                 "INSERT INTO games(whitePlayerID, blackPlayerID, result, resultReason) VALUES (?, ?, ?, ?)",  # noqa: E501

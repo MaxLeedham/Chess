@@ -3,6 +3,8 @@ from __future__ import annotations
 import copy
 import typing
 
+import pygame
+
 if typing.TYPE_CHECKING:
     from sharedfiles.board import Board
     from sharedfiles.square import Square
@@ -61,6 +63,11 @@ class Piece:
             prev_square = board.get_square_from_pos(self.pos)
             square_copy = copy.copy(square)
 
+            if square.occupying_piece is None:
+                pygame.mixer.music.load("sharedfiles/sounds/move.mp3")
+            else:
+                pygame.mixer.music.load("sharedfiles/sounds/capture.mp3")
+
             board.move_count += 1
             board.moves.append(
                 (self.generate_move_notation(board, prev_square, square) or "some move")
@@ -68,6 +75,7 @@ class Piece:
             print(board.moves[-1] if board.moves[-1] != "some move" else "")
 
             self.pos, self.x, self.y = square.pos, square.x, square.y
+            pygame.mixer.music.play()
 
             # Set the square we were on before to having nothing
             # and the new one as having this piece
