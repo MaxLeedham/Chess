@@ -10,8 +10,8 @@ games_played INTEGER NOT NULL DEFAULT 0
 
 CREATE TABLE games(
 gameID INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-whitePlayerID INTEGER NOT NULL,
-blackPlayerID INTEGER NOT NULL,
+whitePlayerID INTEGER,
+blackPlayerID INTEGER,
 result INTEGER NOT NULL, -- 0 = draw, 1 = white won, 2 = black won
 resultReason TEXT NOT NULL
 );
