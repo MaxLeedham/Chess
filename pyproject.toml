@@ -23,5 +23,5 @@ extend-select = [
     "TID",
     "YTT",
 ]
-ignore = ["E402", "B905", "N818", "S101", "ERA001", "T201"]
+ignore = ["E402", "B905", "N818", "S101", "ERA001", "T201", "RUF100"]
 show-fixes = true
