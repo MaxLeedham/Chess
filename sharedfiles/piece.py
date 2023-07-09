@@ -161,16 +161,16 @@ class Piece:
         # The first thing to check for is the king castling
 
         move_notation: str = ""
-        columns: str = "abcdefghijklmnop"
+        # columns: str = "abcdefghijklmnop"
 
-        if self.notation == " ":
-            if prev_square.x != new_square.x:
-                move_notation += (
-                    f"{columns[prev_square.x]}x{new_square.get_coord(board)}"
-                )
-            else:
-                move_notation += new_square.get_coord(board)
-        elif (
+        # if self.notation == " ":
+        #     if prev_square.x != new_square.x:
+        #         move_notation += (
+        #             f"{columns[prev_square.x]}x{new_square.get_coord(board)}"
+        #         )
+        #     else:
+        #         move_notation += new_square.get_coord(board)
+        if (
             prev_square.occupying_piece.notation == "K"
             and abs(prev_square.x - new_square.x) == 2
         ):
@@ -180,8 +180,6 @@ class Piece:
             else:
                 move_notation += "O-O"
         else:
-            move_notation += (
-                f"{prev_square.occupying_piece.notation}{new_square.get_coord(board)}"
-            )
+            move_notation += f"{prev_square.get_coord(board)}{prev_square.occupying_piece.notation}{new_square.get_coord(board)}"  # noqa: E501
 
         return move_notation

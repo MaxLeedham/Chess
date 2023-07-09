@@ -239,71 +239,6 @@ class Board:
 
         return output
 
-    # def is_in_check(
-    #     self,
-    #     colour: str,
-    #     board_change: typing.List[
-    #         typing.Tuple[int, int], typing.Tuple[int, int]
-    #     ] = None,
-    #     tmp: bool = False,
-    # ):  # board_change = [(x1, y1), (x2, y2)]
-    #     """Checks is a certain colour is in check or not"""
-
-    #     # Makes some variables that will be used while checking
-    #     output = False
-    #     king_pos = None
-    #     changing_piece = None
-    #     old_square = None
-    #     new_square = None
-    #     new_square_old_piece = None
-
-    #     if board_change is not None:
-    #         print("board_change is not None") if tmp else ""
-    #         for square in self.squares:
-    #             if square.pos == board_change[0]:
-    #                 changing_piece = square.occupying_piece
-    #                 old_square = square
-    #                 old_square.occupying_piece = None
-
-    #             if square.pos == board_change[1]:
-    #                 new_square = square
-    #                 new_square_old_piece = new_square.occupying_piece
-    #                 new_square.occupying_piece = changing_piece
-
-    #         check = self.is_in_check(colour, None, tmp)
-    #         old_square.occupying_piece = changing_piece
-    #         new_square.occupying_piece = new_square_old_piece
-
-    #         return check
-
-    #     pieces = [
-    #         i.occupying_piece for i in self.squares if i.occupying_piece is not None
-    #     ]
-
-    #     if changing_piece is not None and changing_piece.notation == "K":
-    #         king_pos = new_square.pos
-
-    #     if king_pos is None:
-    #         for piece in pieces:
-    #             if piece.notation == "K" and piece.colour == colour:
-    #                 king_pos = piece.pos
-
-    #     for piece in pieces:
-    #         if piece.colour != colour:
-    #             # If a piece can attack the square the king is on
-    #             print(
-    #                 f"{piece.notation}: {[square.pos for square in piece.attacking_squares(self)]}"  # noqa: E501
-    #             ) if tmp else ""
-    #             for square in piece.attacking_squares(self):
-    #                 if square.pos == king_pos:
-    #                     output = True
-
-    #     if board_change is not None:
-    #         old_square.occupying_piece = changing_piece
-    #         new_square.occupying_piece = new_square_old_piece
-
-    #     return output
-
     def is_in_checkmate(self, colour):
         """Checks if a colours king is in checkmate"""
 
@@ -404,13 +339,31 @@ class Board:
 
         for piece in pieces:
             # Skip pieces that don't meet the criteria
-            if (
-                (notation is not None and piece.notation != notation)
-                or (pos is not None and piece.pos != pos)
-                or (colour is not None and piece.colour != colour)
-            ):
-                continue
+            notation_critera = (
+                (piece.notation == notation) if notation is not None else True
+            )
+            pos_critera = (piece.pos == pos) if pos is not None else True
+            colour_critera = (piece.colour == colour) if colour is not None else True
 
-            criteria_met_pieces.append(piece)
+            if notation_critera and pos_critera and colour_critera:
+                criteria_met_pieces.append(piece)
 
         return criteria_met_pieces
+
+    def get_all_move_notations(self) -> typing.List[str]:
+        pieces = [
+            square.occupying_piece
+            for square in self.squares
+            if square.occupying_piece is not None
+            and square.occupying_piece.colour == self.turn
+        ]
+
+        moves: typing.List[str] = []
+
+        for piece in pieces:
+            for move in piece.get_valid_moves(self):
+                square = self.get_square_from_pos((piece.x, piece.y))
+                notation = piece.generate_move_notation(self, square, move)
+                moves.append(notation)
+
+        return moves
