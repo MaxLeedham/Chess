@@ -77,6 +77,11 @@ class Piece:
             self.pos, self.x, self.y = square.pos, square.x, square.y
             pygame.mixer.music.play()
 
+            if board.turn == "white":
+                board.white_time += board.increment
+            else:
+                board.black_time += board.increment
+
             # Set the square we were on before to having nothing
             # and the new one as having this piece
             prev_square.occupying_piece = None

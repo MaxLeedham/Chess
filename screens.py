@@ -11,6 +11,8 @@ from users import User
 
 time_limit = 600  # 10 minutes
 board_size = 8
+increment = 0
+theme = "dark mode"
 
 pygame.init()
 
@@ -84,6 +86,14 @@ def validate_login(username: str, password: str) -> bool:
     return len(data) == 1
 
 
+def add_padding(text: str, size: int) -> str:
+    if len(text) > size:
+        raise ValueError("Can't add padding - text is larger than size")
+
+    text = text.center(size)
+    return text
+
+
 results: typing.List = []  # "" for draw or winner, reason
 
 while True:
@@ -107,7 +117,7 @@ while True:
             black_user = players[0]
             players[0].playing_as = "black"
 
-        board = Board(WINDOW_SIZE[1], WINDOW_SIZE[1], board_size, time_limit)
+        board = Board(WINDOW_SIZE[1], WINDOW_SIZE[1], board_size, time_limit, increment)
 
         running = True
         while running:
@@ -326,10 +336,10 @@ while True:
                 screen,
             )
 
-            add_text("Time controls:", (WINDOW_SIZE[0] * 0.15, 150), screen)
+            add_text("Time controls:", (WINDOW_SIZE[0] * 0.15, 100), screen)
 
             time_1_min_button = MenuItem(
-                (WINDOW_SIZE[0] * 0.1, 195),
+                (WINDOW_SIZE[0] * 0.1, 145),
                 30,
                 "1 minute",
                 (255, 255, 255) if time_limit != 60 else (150, 150, 150),
@@ -337,7 +347,7 @@ while True:
             )
 
             time_5_mins = MenuItem(
-                (WINDOW_SIZE[0] * 0.3, 195),
+                (WINDOW_SIZE[0] * 0.3, 145),
                 30,
                 "5 minutes",
                 (255, 255, 255) if time_limit != 300 else (150, 150, 150),
@@ -345,7 +355,7 @@ while True:
             )
 
             time_10_mins_button = MenuItem(
-                (WINDOW_SIZE[0] * 0.5, 195),
+                (WINDOW_SIZE[0] * 0.5, 145),
                 30,
                 "10 minutes",
                 (255, 255, 255) if time_limit != 600 else (150, 150, 150),
@@ -353,7 +363,7 @@ while True:
             )
 
             time_30_mins_button = MenuItem(
-                (WINDOW_SIZE[0] * 0.7, 195),
+                (WINDOW_SIZE[0] * 0.7, 145),
                 30,
                 "30 minutes",
                 (255, 255, 255) if time_limit != 1800 else (150, 150, 150),
@@ -361,17 +371,17 @@ while True:
             )
 
             time_1_hour_button = MenuItem(
-                (WINDOW_SIZE[0] * 0.9, 195),
+                (WINDOW_SIZE[0] * 0.9, 145),
                 30,
                 "1 hour",
                 (255, 255, 255) if time_limit != 3600 else (150, 150, 150),
                 screen,
             )
 
-            add_text("Board size:", (WINDOW_SIZE[0] * 0.15, 350), screen)
+            add_text("Board size:", (WINDOW_SIZE[0] * 0.15, 200), screen)
 
             board_8x8 = MenuItem(
-                (WINDOW_SIZE[0] * 0.15, 395),
+                (WINDOW_SIZE[0] * 0.15, 245),
                 30,
                 "8x8",
                 (255, 255, 255) if board_size != 8 else (150, 150, 150),
@@ -379,10 +389,58 @@ while True:
             )
 
             board_10x10 = MenuItem(
-                (WINDOW_SIZE[0] * 0.35, 395),
+                (WINDOW_SIZE[0] * 0.35, 245),
                 30,
                 "10x10",
                 (255, 255, 255) if board_size != 10 else (150, 150, 150),
+                screen,
+            )
+
+            add_text("Increments:", (WINDOW_SIZE[0] * 0.15, 300), screen)
+
+            incremement_0s = MenuItem(
+                (WINDOW_SIZE[0] * 0.15, 345),
+                30,
+                "0s",
+                (255, 255, 255) if increment != 0 else (150, 150, 150),
+                screen,
+            )
+            incremement_1s = MenuItem(
+                (WINDOW_SIZE[0] * 0.25, 345),
+                30,
+                "1s",
+                (255, 255, 255) if increment != 1 else (150, 150, 150),
+                screen,
+            )
+            incremement_5s = MenuItem(
+                (WINDOW_SIZE[0] * 0.35, 345),
+                30,
+                "5s",
+                (255, 255, 255) if increment != 5 else (150, 150, 150),
+                screen,
+            )
+            incremement_1m = MenuItem(
+                (WINDOW_SIZE[0] * 0.45, 345),
+                30,
+                "1m",
+                (255, 255, 255) if increment != 60 else (150, 150, 150),
+                screen,
+            )
+            incremement_2m = MenuItem(
+                (WINDOW_SIZE[0] * 0.55, 345),
+                30,
+                "2m",
+                (255, 255, 255) if increment != 120 else (150, 150, 150),
+                screen,
+            )
+
+            add_text("Themes:", (WINDOW_SIZE[0] * 0.15, 300), screen)
+
+            dark_mode = MenuItem(
+                (WINDOW_SIZE[0] * 0.15, 345),
+                30,
+                "Dark mode",
+                (255, 255, 255) if theme != "dark mode" else (150, 150, 150),
                 screen,
             )
 
@@ -415,6 +473,17 @@ while True:
                         board_size = 8
                     if board_10x10.has_been_clicked(mouse_x, mouse_y):
                         board_size = 10
+
+                    if incremement_0s.has_been_clicked(mouse_x, mouse_y):
+                        increment = 0
+                    if incremement_1s.has_been_clicked(mouse_x, mouse_y):
+                        increment = 1
+                    if incremement_5s.has_been_clicked(mouse_x, mouse_y):
+                        increment = 5
+                    if incremement_1m.has_been_clicked(mouse_x, mouse_y):
+                        increment = 60
+                    if incremement_2m.has_been_clicked(mouse_x, mouse_y):
+                        increment = 120
 
     elif state == "login":
         if len(players) < 2:
@@ -629,7 +698,7 @@ while True:
                                 )
                             elif len(username_field.text) <= 2:
                                 error_message = "Username too short"
-                            elif len(username_field.text) >= 16:
+                            elif len(username_field.text) >= 10:
                                 error_message = "Username is too long"
                             elif len(password_field.text) >= 20:
                                 error_message = "Password is too long"
@@ -740,25 +809,25 @@ while True:
                 if results[0] == "white":
                     db.execute(
                         "UPDATE users SET rating = rating + ? WHERE userID = ?",
-                        (difference, white_user.user_id),
+                        (int(difference), white_user.user_id),
                     )
                     white_user.rating += difference
 
                     db.execute(
                         "UPDATE users SET rating = rating - ? WHERE userID = ?",
-                        (difference, black_user.user_id),
+                        (int(difference), black_user.user_id),
                     )
                     black_user.rating -= difference
                 else:
                     db.execute(
                         "UPDATE users SET rating = rating + ? WHERE userID = ?",
-                        (difference, black_user.user_id),
+                        (int(difference), black_user.user_id),
                     )
                     black_user.rating += difference
 
                     db.execute(
                         "UPDATE users SET rating = rating - ? WHERE userID = ?",
-                        (difference, white_user.user_id),
+                        (int(difference), white_user.user_id),
                     )
                     white_user.rating -= difference
 
@@ -801,8 +870,31 @@ while True:
 
     elif state == "leaderboard":
         data = db.select(
-            "SELECT username, rating, wins, draws, games_played FROM users ORDER BY rating DESC, wins DESC, draws DESC LIMIT 5"  # noqa: E501
+            "SELECT username, rating, wins, draws, games_played FROM users ORDER BY rating DESC, wins DESC, draws DESC LIMIT 7"  # noqa: E501
         )
+
+        titles = ["Username", "rating", "wins", "draws", "loses"]
+
+        max_sizes = []
+        for i in range(5):
+            tmp = [len(str(text[i])) for text in data]
+            tmp.append(len(titles[i]))
+            max_sizes.append(max(tmp))
+
+        table_rects = []
+        line_height = 85 + (len(data) * 50)
+
+        table_rects.append(pygame.Rect(120, 70, 580, 1))
+        table_rects.append(pygame.Rect(120, 120, 580, 1))
+        table_rects.append(pygame.Rect(120, 70 + line_height, 580, 1))
+
+        table_rects.append(pygame.Rect(120, 70, 1, line_height))
+        table_rects.append(pygame.Rect(295, 70, 1, line_height))
+        table_rects.append(pygame.Rect(413, 70, 1, line_height))
+        table_rects.append(pygame.Rect(497, 70, 1, line_height))
+        table_rects.append(pygame.Rect(600, 70, 1, line_height))
+        table_rects.append(pygame.Rect(700, 70, 1, line_height))
+
         running = True
         while running:
             screen.fill((60, 60, 60))
@@ -817,18 +909,37 @@ while True:
                 screen,
             )
 
+            title_text = " ".join(
+                [add_padding(titles[i], max_sizes[i]) for i in range(len(titles))]
+            )
+
             add_text(
-                "User, username, rating, wins, draws, loses",
+                title_text,
                 ((WINDOW_SIZE[0] + 1) / 2, 100),
                 screen,
+                font_name="Consolas.ttf",
             )
 
             for i, user in enumerate(data):
+                user_data = [str(user[j]) for j in range(4)]
+                user_data.append(str(user[4] - user[2] - user[3]))
+
+                user_data = " ".join(
+                    [
+                        add_padding(text, max_sizes[i])
+                        for i, text in enumerate(user_data)
+                    ]
+                )
+
                 add_text(
-                    f"{user[0]}, {user[1]}, {user[2]}, {user[3]}, {user[4] - user[2] - user[3]}",  # noqa: E501
+                    user_data,  # noqa: E501
                     ((WINDOW_SIZE[0] + 1) / 2, 175 + (i * 50)),
                     screen,
+                    font_name="Consolas.ttf",
                 )
+
+            for rect in table_rects:
+                pygame.draw.rect(screen, (255, 255, 255), rect)
 
             pygame.display.update()
 

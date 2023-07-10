@@ -9,8 +9,9 @@ def add_text(
     display,
     size=30,
     colour: typing.Tuple[int, int, int] = (255, 255, 255),
+    font_name: str = "freesansbold.ttf",
 ) -> pygame.Rect:
-    font = pygame.font.Font("freesansbold.ttf", size)
+    font = pygame.font.Font(font_name, size)
     display_text = font.render(text, True, colour)
     text_rect = display_text.get_rect()
     text_rect.center = cords

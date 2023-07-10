@@ -1,3 +1,2 @@
-Menu
-Side bar with turn and last move
-Timer
+Themes
+Turn leaderboard into table

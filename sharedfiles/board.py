@@ -18,7 +18,7 @@ if typing.TYPE_CHECKING:
 
 # Game state checker
 class Board:
-    def __init__(self, width, height, size=8, time_limit=600):
+    def __init__(self, width, height, size=8, time_limit=600, increment=0):
         # Sets up the width and height of the board as well as the individual squares
         self.width = width
         self.height = height
@@ -43,6 +43,7 @@ class Board:
         self.black_elapsed_time = 0
         self.white_time_elapsed = 0  # Cumulative elapsed time for white player
         self.black_time_elapsed = 0  # Cumulative elapsed time for black player
+        self.increment = increment
 
         self.moves = []
         self.move_count = 0
