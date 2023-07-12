@@ -13,6 +13,8 @@ time_limit = 600  # 10 minutes
 board_size = 8
 increment = 0
 theme = "dark mode"
+font = "freesansbold.ttf"  # Default font
+mono_font = "fonts/JetBrains Mono.ttf"
 
 pygame.init()
 
@@ -43,12 +45,9 @@ def draw(display: pygame.surface.Surface):
         f"{white_user.username if board.turn == 'white' else black_user.username}'s turn",  # noqa: E501
         (718, 50),
         display,
+        font_name=font,
     )
-    add_text(
-        f"Move {len(board.moves)}:",
-        (718, 100),
-        display,
-    )
+    add_text(f"Move {len(board.moves)}:", (718, 100), display, font_name=font)
     add_text(
         "None"
         if len(board.moves) == 0
@@ -57,13 +56,14 @@ def draw(display: pygame.surface.Surface):
         else board.moves[-1],
         (718, 150),
         display,
+        font_name=font,
     )
 
-    add_text("Blacks Time:", (712.5, 350), display)
-    add_text(format_time(board.black_time), (712.5, 395), display)
+    add_text("Blacks Time:", (712.5, 350), display, font_name=font)
+    add_text(format_time(board.black_time), (712.5, 395), display, font_name=font)
 
-    add_text("Whites Time:", (712.5, 450), display)
-    add_text(format_time(board.white_time), (712.5, 495), display)
+    add_text("Whites Time:", (712.5, 450), display, font_name=font)
+    add_text(format_time(board.white_time), (712.5, 495), display, font_name=font)
 
 
 def validate_login(username: str, password: str) -> bool:
@@ -121,6 +121,9 @@ while True:
 
         running = True
         while running:
+            # Odd number of moves = whites turn
+            # Even number of moves = blacks turn
+
             elapsed_time = (
                 time.time() - start_time
             )  # number of seconds since the program started
@@ -129,15 +132,17 @@ while True:
             if board.turn == "white":
                 board.white_elapsed_time = time.time() - board.time_at_turn
                 board.white_time = time_limit - (
-                    board.white_time_elapsed + board.white_elapsed_time
+                    board.white_cumulative_time + board.white_elapsed_time
                 )
             else:
                 board.black_elapsed_time = time.time() - board.time_at_turn
                 board.black_time = time_limit - (
-                    board.black_time_elapsed + board.black_elapsed_time
+                    board.black_cumulative_time + board.black_elapsed_time
                 )
 
-            resign_button = MenuItem((725, 300), 30, "Resign", (255, 255, 255), screen)
+            resign_button = MenuItem(
+                (725, 300), 30, "Resign", (255, 255, 255), screen, font_name=font
+            )
             pygame.display.update()
 
             mouse_x, mouse_y = pygame.mouse.get_pos()
@@ -228,7 +233,9 @@ while True:
         while running:
             screen.fill((60, 60, 60))
 
-            add_text("Chess", ((WINDOW_SIZE[0] + 1) / 2, 20), screen, 50)
+            add_text(
+                "Chess", ((WINDOW_SIZE[0] + 1) / 2, 20), screen, 50, font_name=font
+            )
 
             play_button = MenuItem(
                 ((WINDOW_SIZE[0] + 1) / 2, 100),
@@ -236,6 +243,7 @@ while True:
                 "Play game",
                 (255, 255, 255),
                 screen,
+                font_name=font,
             )
 
             settings_button = MenuItem(
@@ -244,6 +252,7 @@ while True:
                 "Settings",
                 (255, 255, 255),
                 screen,
+                font_name=font,
             )
 
             register_button = MenuItem(
@@ -252,6 +261,7 @@ while True:
                 "Register",
                 (255, 255, 255),
                 screen,
+                font_name=font,
             )
 
             login_button = MenuItem(
@@ -260,6 +270,7 @@ while True:
                 "Login",
                 (255, 255, 255) if len(players) != 2 else (150, 150, 150),
                 screen,
+                font_name=font,
             )
 
             logout_button = MenuItem(
@@ -268,6 +279,7 @@ while True:
                 "Logout",
                 (255, 255, 255) if len(players) != 0 else (150, 150, 150),
                 screen,
+                font_name=font,
             )
 
             leaderboard_button = MenuItem(
@@ -276,10 +288,16 @@ while True:
                 "Leaderboard",
                 (255, 255, 255),
                 screen,
+                font_name=font,
             )
 
             exit_button = MenuItem(
-                ((WINDOW_SIZE[0] + 1) / 2, 550), 30, "Exit", (255, 255, 255), screen
+                ((WINDOW_SIZE[0] + 1) / 2, 550),
+                30,
+                "Exit",
+                (255, 255, 255),
+                screen,
+                font_name=font,
             )
 
             pygame.display.update()
@@ -326,17 +344,17 @@ while True:
         while running:
             screen.fill((60, 60, 60))
 
-            add_text("Settings", ((WINDOW_SIZE[0] + 1) / 2, 20), screen, 40)
-
-            back_button = MenuItem(
-                (15, 10),
-                15,
-                "Back",
-                (255, 255, 255),
-                screen,
+            add_text(
+                "Settings", ((WINDOW_SIZE[0] + 1) / 2, 20), screen, 40, font_name=font
             )
 
-            add_text("Time controls:", (WINDOW_SIZE[0] * 0.15, 100), screen)
+            back_button = MenuItem(
+                (15, 10), 15, "Back", (255, 255, 255), screen, font_name=font
+            )
+
+            add_text(
+                "Time controls:", (WINDOW_SIZE[0] * 0.15, 100), screen, font_name=font
+            )
 
             time_1_min_button = MenuItem(
                 (WINDOW_SIZE[0] * 0.1, 145),
@@ -344,6 +362,7 @@ while True:
                 "1 minute",
                 (255, 255, 255) if time_limit != 60 else (150, 150, 150),
                 screen,
+                font_name=font,
             )
 
             time_5_mins = MenuItem(
@@ -352,6 +371,7 @@ while True:
                 "5 minutes",
                 (255, 255, 255) if time_limit != 300 else (150, 150, 150),
                 screen,
+                font_name=font,
             )
 
             time_10_mins_button = MenuItem(
@@ -360,6 +380,7 @@ while True:
                 "10 minutes",
                 (255, 255, 255) if time_limit != 600 else (150, 150, 150),
                 screen,
+                font_name=font,
             )
 
             time_30_mins_button = MenuItem(
@@ -368,6 +389,7 @@ while True:
                 "30 minutes",
                 (255, 255, 255) if time_limit != 1800 else (150, 150, 150),
                 screen,
+                font_name=font,
             )
 
             time_1_hour_button = MenuItem(
@@ -376,9 +398,12 @@ while True:
                 "1 hour",
                 (255, 255, 255) if time_limit != 3600 else (150, 150, 150),
                 screen,
+                font_name=font,
             )
 
-            add_text("Board size:", (WINDOW_SIZE[0] * 0.15, 200), screen)
+            add_text(
+                "Board size:", (WINDOW_SIZE[0] * 0.12, 200), screen, font_name=font
+            )
 
             board_8x8 = MenuItem(
                 (WINDOW_SIZE[0] * 0.15, 245),
@@ -386,6 +411,7 @@ while True:
                 "8x8",
                 (255, 255, 255) if board_size != 8 else (150, 150, 150),
                 screen,
+                font_name=font,
             )
 
             board_10x10 = MenuItem(
@@ -394,9 +420,12 @@ while True:
                 "10x10",
                 (255, 255, 255) if board_size != 10 else (150, 150, 150),
                 screen,
+                font_name=font,
             )
 
-            add_text("Increments:", (WINDOW_SIZE[0] * 0.15, 300), screen)
+            add_text(
+                "Increments:", (WINDOW_SIZE[0] * 0.12, 300), screen, font_name=font
+            )
 
             incremement_0s = MenuItem(
                 (WINDOW_SIZE[0] * 0.15, 345),
@@ -404,6 +433,7 @@ while True:
                 "0s",
                 (255, 255, 255) if increment != 0 else (150, 150, 150),
                 screen,
+                font_name=font,
             )
             incremement_1s = MenuItem(
                 (WINDOW_SIZE[0] * 0.25, 345),
@@ -411,6 +441,7 @@ while True:
                 "1s",
                 (255, 255, 255) if increment != 1 else (150, 150, 150),
                 screen,
+                font_name=font,
             )
             incremement_5s = MenuItem(
                 (WINDOW_SIZE[0] * 0.35, 345),
@@ -418,6 +449,7 @@ while True:
                 "5s",
                 (255, 255, 255) if increment != 5 else (150, 150, 150),
                 screen,
+                font_name=font,
             )
             incremement_1m = MenuItem(
                 (WINDOW_SIZE[0] * 0.45, 345),
@@ -425,6 +457,7 @@ while True:
                 "1m",
                 (255, 255, 255) if increment != 60 else (150, 150, 150),
                 screen,
+                font_name=font,
             )
             incremement_2m = MenuItem(
                 (WINDOW_SIZE[0] * 0.55, 345),
@@ -432,16 +465,47 @@ while True:
                 "2m",
                 (255, 255, 255) if increment != 120 else (150, 150, 150),
                 screen,
+                font_name=font,
             )
 
-            add_text("Themes:", (WINDOW_SIZE[0] * 0.15, 300), screen)
+            add_text("Fonts:", (WINDOW_SIZE[0] * 0.06, 400), screen, font_name=font)
 
-            dark_mode = MenuItem(
-                (WINDOW_SIZE[0] * 0.15, 345),
+            default_font = MenuItem(
+                (WINDOW_SIZE[0] * 0.1, 445),
                 30,
-                "Dark mode",
-                (255, 255, 255) if theme != "dark mode" else (150, 150, 150),
+                "Default",
+                (255, 255, 255) if font != "freesansbold.ttf" else (150, 150, 150),
                 screen,
+                font_name=font,
+            )
+
+            fira_code_font = MenuItem(
+                (WINDOW_SIZE[0] * 0.3, 445),
+                30,
+                "FiraCode",
+                (255, 255, 255) if font != "fonts/FiraCode.ttf" else (150, 150, 150),
+                screen,
+                font_name=font,
+            )
+
+            consolas_font = MenuItem(
+                (WINDOW_SIZE[0] * 0.55, 445),
+                30,
+                "Consolas",
+                (255, 255, 255) if font != "fonts/Consolas.ttf" else (150, 150, 150),
+                screen,
+                font_name=font,
+            )
+
+            jetbrains_font = MenuItem(
+                (WINDOW_SIZE[0] * 0.85, 445),
+                30,
+                "JetBrains Mono",
+                (255, 255, 255)
+                if font != "fonts/JetBrains Mono.ttf"
+                else (150, 150, 150),
+                screen,
+                font_name=font,
             )
 
             pygame.display.update()
@@ -485,6 +549,15 @@ while True:
                     if incremement_2m.has_been_clicked(mouse_x, mouse_y):
                         increment = 120
 
+                    if default_font.has_been_clicked(mouse_x, mouse_y):
+                        font = "freesansbold.ttf"
+                    if fira_code_font.has_been_clicked(mouse_x, mouse_y):
+                        font = "fonts/FiraCode.ttf"
+                    if consolas_font.has_been_clicked(mouse_x, mouse_y):
+                        font = "fonts/Consolas.ttf"
+                    if jetbrains_font.has_been_clicked(mouse_x, mouse_y):
+                        font = "fonts/JetBrains Mono.ttf"
+
     elif state == "login":
         if len(players) < 2:
             running = True
@@ -499,11 +572,18 @@ while True:
                 screen.fill((60, 60, 60))
 
                 add_text(
-                    "Login to your account", ((WINDOW_SIZE[0] + 1) / 2, 20), screen
+                    "Login to your account",
+                    ((WINDOW_SIZE[0] + 1) / 2, 20),
+                    screen,
+                    font_name=font,
                 )
 
-                add_text("Username: ", (WINDOW_SIZE[0] * 0.15, 175), screen)
-                add_text("Password: ", (WINDOW_SIZE[0] * 0.15, 275), screen)
+                add_text(
+                    "Username: ", (WINDOW_SIZE[0] * 0.15, 175), screen, font_name=font
+                )
+                add_text(
+                    "Password: ", (WINDOW_SIZE[0] * 0.15, 275), screen, font_name=font
+                )
 
                 add_text(
                     error_message,
@@ -511,14 +591,11 @@ while True:
                     screen,
                     15,
                     (255, 0, 0),
+                    font_name=font,
                 )
 
                 back_button = MenuItem(
-                    (15, 10),
-                    15,
-                    "Back",
-                    (255, 255, 255),
-                    screen,
+                    (15, 10), 15, "Back", (255, 255, 255), screen, font_name=font
                 )
 
                 login_button = MenuItem(
@@ -527,6 +604,7 @@ while True:
                     "Login",
                     (255, 255, 255),
                     screen,
+                    font_name=font,
                 )
 
                 username_field.draw(screen)
@@ -570,14 +648,12 @@ while True:
 
             while running:
                 screen.fill((60, 60, 60))
-                add_text("Logout", ((WINDOW_SIZE[0] + 1) / 2, 50), screen)
+                add_text(
+                    "Logout", ((WINDOW_SIZE[0] + 1) / 2, 50), screen, font_name=font
+                )
 
                 back_button = MenuItem(
-                    (15, 10),
-                    15,
-                    "Back",
-                    (255, 255, 255),
-                    screen,
+                    (15, 10), 15, "Back", (255, 255, 255), screen, font_name=font
                 )
 
                 player_0 = MenuItem(
@@ -586,6 +662,7 @@ while True:
                     players[0].username,
                     (255, 255, 255),
                     screen,
+                    font_name=font,
                 )
 
                 player_1 = MenuItem(
@@ -594,6 +671,7 @@ while True:
                     players[1].username,
                     (255, 255, 255),
                     screen,
+                    font_name=font,
                 )
 
                 for event in pygame.event.get():
@@ -636,12 +714,24 @@ while True:
                 screen.fill((60, 60, 60))
 
                 add_text(
-                    "Register a new account", ((WINDOW_SIZE[0] + 1) / 2, 20), screen
+                    "Register a new account",
+                    ((WINDOW_SIZE[0] + 1) / 2, 20),
+                    screen,
+                    font_name=font,
                 )
 
-                add_text("Username: ", (WINDOW_SIZE[0] * 0.15, 175), screen)
-                add_text("Password: ", (WINDOW_SIZE[0] * 0.15, 275), screen)
-                add_text("Confirm Password: ", (WINDOW_SIZE[0] * 0.2, 375), screen)
+                add_text(
+                    "Username: ", (WINDOW_SIZE[0] * 0.15, 175), screen, font_name=font
+                )
+                add_text(
+                    "Password: ", (WINDOW_SIZE[0] * 0.15, 275), screen, font_name=font
+                )
+                add_text(
+                    "Confirm Password: ",
+                    (WINDOW_SIZE[0] * 0.2, 375),
+                    screen,
+                    font_name=font,
+                )
 
                 add_text(
                     error_message,
@@ -649,14 +739,11 @@ while True:
                     screen,
                     15,
                     (255, 0, 0),
+                    font_name=font,
                 )
 
                 back_button = MenuItem(
-                    (15, 10),
-                    15,
-                    "Back",
-                    (255, 255, 255),
-                    screen,
+                    (15, 10), 15, "Back", (255, 255, 255), screen, font_name=font
                 )
 
                 register_button = MenuItem(
@@ -665,6 +752,7 @@ while True:
                     "Register",
                     (255, 255, 255),
                     screen,
+                    font_name=font,
                 )
 
                 username_field.draw(screen)
@@ -797,39 +885,41 @@ while True:
                     (white_user.user_id,),
                 )
 
-            if not white_user.guest and not black_user.guest:
-                # Update their ratings
+        if not white_user.guest and not black_user.guest:
+            # Update their ratings
 
-                if white_user.rating == black_user.rating:
-                    difference = 50
-                    print("Ratings are the same")
-                else:
-                    difference = abs(white_user.rating - black_user.rating) * 0.2
+            if white_user.rating == black_user.rating:
+                difference = 50
+                print("Ratings are the same")
+            else:
+                difference = min(
+                    int(abs(white_user.rating - black_user.rating) * 0.2), 150
+                )
 
-                if results[0] == "white":
-                    db.execute(
-                        "UPDATE users SET rating = rating + ? WHERE userID = ?",
-                        (int(difference), white_user.user_id),
-                    )
-                    white_user.rating += difference
+            if results[0] == "white":
+                db.execute(
+                    "UPDATE users SET rating = rating + ? WHERE userID = ?",
+                    (int(difference), white_user.user_id),
+                )
+                white_user.rating += difference
 
-                    db.execute(
-                        "UPDATE users SET rating = rating - ? WHERE userID = ?",
-                        (int(difference), black_user.user_id),
-                    )
-                    black_user.rating -= difference
-                else:
-                    db.execute(
-                        "UPDATE users SET rating = rating + ? WHERE userID = ?",
-                        (int(difference), black_user.user_id),
-                    )
-                    black_user.rating += difference
+                db.execute(
+                    "UPDATE users SET rating = rating - ? WHERE userID = ?",
+                    (int(difference), black_user.user_id),
+                )
+                black_user.rating -= difference
+            else:
+                db.execute(
+                    "UPDATE users SET rating = rating + ? WHERE userID = ?",
+                    (int(difference), black_user.user_id),
+                )
+                black_user.rating += difference
 
-                    db.execute(
-                        "UPDATE users SET rating = rating - ? WHERE userID = ?",
-                        (int(difference), white_user.user_id),
-                    )
-                    white_user.rating -= difference
+                db.execute(
+                    "UPDATE users SET rating = rating - ? WHERE userID = ?",
+                    (int(difference), white_user.user_id),
+                )
+                white_user.rating -= difference
 
         db.execute(
             "INSERT INTO games(whitePlayerID, blackPlayerID, result, resultReason) VALUES (?, ?, ?, ?)",  # noqa: E501
@@ -843,7 +933,9 @@ while True:
 
         screen.fill((60, 60, 60))
 
-        add_text("Game ended!", ((WINDOW_SIZE[0] + 1) / 2, 50), screen, 50)
+        add_text(
+            "Game ended!", ((WINDOW_SIZE[0] + 1) / 2, 50), screen, 50, font_name=font
+        )
 
         add_text(
             "Draw"
@@ -853,9 +945,10 @@ while True:
             else f"{black_user.username.title()} wins",
             ((WINDOW_SIZE[0] + 1) / 2, 250),
             screen,
+            font_name=font,
         )
 
-        add_text(results[1], ((WINDOW_SIZE[0] + 1) / 2, 350), screen)
+        add_text(results[1], ((WINDOW_SIZE[0] + 1) / 2, 350), screen, font_name=font)
 
         pygame.display.update()
 
@@ -873,7 +966,13 @@ while True:
             "SELECT username, rating, wins, draws, games_played FROM users ORDER BY rating DESC, wins DESC, draws DESC LIMIT 7"  # noqa: E501
         )
 
-        titles = ["Username", "rating", "wins", "draws", "loses"]
+        titles = [
+            add_padding("Username", 10),
+            "rating",
+            "wins",
+            "draws",
+            "loses",
+        ]
 
         max_sizes = []
         for i in range(5):
@@ -884,29 +983,31 @@ while True:
         table_rects = []
         line_height = 85 + (len(data) * 50)
 
-        table_rects.append(pygame.Rect(120, 70, 580, 1))
-        table_rects.append(pygame.Rect(120, 120, 580, 1))
-        table_rects.append(pygame.Rect(120, 70 + line_height, 580, 1))
+        table_rects.append(pygame.Rect(100, 70, 625, 1))
+        table_rects.append(pygame.Rect(100, 120, 625, 1))
+        table_rects.append(pygame.Rect(100, 70 + line_height, 625, 1))
 
-        table_rects.append(pygame.Rect(120, 70, 1, line_height))
-        table_rects.append(pygame.Rect(295, 70, 1, line_height))
-        table_rects.append(pygame.Rect(413, 70, 1, line_height))
-        table_rects.append(pygame.Rect(497, 70, 1, line_height))
-        table_rects.append(pygame.Rect(600, 70, 1, line_height))
-        table_rects.append(pygame.Rect(700, 70, 1, line_height))
+        table_rects.append(pygame.Rect(100, 70, 1, line_height))
+        table_rects.append(pygame.Rect(290, 70, 1, line_height))
+        table_rects.append(pygame.Rect(420, 70, 1, line_height))
+        table_rects.append(pygame.Rect(511, 70, 1, line_height))
+        table_rects.append(pygame.Rect(617, 70, 1, line_height))
+        table_rects.append(pygame.Rect(725, 70, 1, line_height))
 
         running = True
         while running:
             screen.fill((60, 60, 60))
 
-            add_text("Leaderboard", ((WINDOW_SIZE[0] + 1) / 2, 20), screen, 40)
+            add_text(
+                "Leaderboard",
+                ((WINDOW_SIZE[0] + 1) / 2, 20),
+                screen,
+                40,
+                font_name=font,
+            )
 
             back_button = MenuItem(
-                (15, 10),
-                15,
-                "Back",
-                (255, 255, 255),
-                screen,
+                (15, 10), 15, "Back", (255, 255, 255), screen, font_name=font
             )
 
             title_text = " ".join(
@@ -917,7 +1018,7 @@ while True:
                 title_text,
                 ((WINDOW_SIZE[0] + 1) / 2, 100),
                 screen,
-                font_name="Consolas.ttf",
+                font_name=mono_font,
             )
 
             for i, user in enumerate(data):
@@ -935,7 +1036,7 @@ while True:
                     user_data,  # noqa: E501
                     ((WINDOW_SIZE[0] + 1) / 2, 175 + (i * 50)),
                     screen,
-                    font_name="Consolas.ttf",
+                    font_name=mono_font,
                 )
 
             for rect in table_rects:

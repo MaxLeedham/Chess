@@ -27,6 +27,7 @@ class MenuItem:
         text: str,
         colour: typing.Tuple[int, int, int],
         display,
+        font_name: str = "freesansbold.ttf",
     ) -> None:
         self.center = center
         self.size = size
@@ -34,7 +35,7 @@ class MenuItem:
         self.colour = colour
         self.display = display
 
-        self.rect = add_text(text, center, display, size, colour)
+        self.rect = add_text(text, center, display, size, colour, font_name)
 
     def has_been_clicked(self, mousex: int, mousey: int) -> bool:
         return self.rect.collidepoint(mousex, mousey)
@@ -53,8 +54,9 @@ class InputBox:
         text_size: int = 30,
         text: str = "",
         hide_text: bool = False,
+        font_name: str = "freesansbold.ttf",
     ):
-        self.font = pygame.font.Font("freesansbold.ttf", text_size)
+        self.font = pygame.font.Font(font_name, text_size)
         self.rect = pygame.Rect(x, y, w, h)
         self.colour = self.COLOUR_INACTIVE
         self.text = text

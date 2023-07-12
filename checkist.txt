@@ -1,2 +1,1 @@
 Themes
-Turn leaderboard into table

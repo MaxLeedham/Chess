@@ -41,8 +41,8 @@ class Board:
         self.black_time = time_limit
         self.white_elapsed_time = 0
         self.black_elapsed_time = 0
-        self.white_time_elapsed = 0  # Cumulative elapsed time for white player
-        self.black_time_elapsed = 0  # Cumulative elapsed time for black player
+        self.white_cumulative_time = 0  # Cumulative elapsed time for white player
+        self.black_cumulative_time = 0  # Cumulative elapsed time for black player
         self.increment = increment
 
         self.moves = []
@@ -164,9 +164,13 @@ class Board:
                 self.turn = "white" if self.turn == "black" else "black"
 
                 if self.turn == "white":
-                    self.white_time_elapsed += self.white_elapsed_time
+                    self.white_cumulative_time += (
+                        self.white_elapsed_time - self.increment
+                    )
                 else:
-                    self.black_time_elapsed += self.black_elapsed_time
+                    self.black_cumulative_time += (
+                        self.black_elapsed_time - self.increment
+                    )
 
                 self.time_at_turn = time.time()
 
